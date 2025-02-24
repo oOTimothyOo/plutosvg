@@ -6,10 +6,7 @@ set(PLUTOSVG_VERSION_MICRO 6)
 
 project(plutosvg LANGUAGES C VERSION ${PLUTOSVG_VERSION_MAJOR}.${PLUTOSVG_VERSION_MINOR}.${PLUTOSVG_VERSION_MICRO})
 
-find_package(plutovg 0.0.4 QUIET)
-if(NOT plutovg_FOUND)
-    add_subdirectory(plutovg)
-endif()
+add_subdirectory(plutovg)
 
 set(plutosvg_sources
     source/plutosvg.h
@@ -48,13 +45,10 @@ if(NOT BUILD_SHARED_LIBS)
     target_compile_definitions(plutosvg PUBLIC PLUTOSVG_BUILD_STATIC)
 endif()
 
-option(PLUTOSVG_ENABLE_FREETYPE "Enable Freetype integration" OFF)
-if(PLUTOSVG_ENABLE_FREETYPE)
-    find_package(Freetype 2.12 REQUIRED)
-    target_compile_definitions(plutosvg PUBLIC PLUTOSVG_HAS_FREETYPE)
-    target_include_directories(plutosvg PUBLIC ${FREETYPE_INCLUDE_DIRS})
-    target_link_libraries(plutosvg PUBLIC ${FREETYPE_LIBRARIES})
-endif()
+
+target_compile_definitions(plutosvg PUBLIC PLUTOSVG_HAS_FREETYPE)
+target_link_libraries(plutosvg PUBLIC Freetype::Freetype)
+
 
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
@@ -99,7 +93,7 @@ export(EXPORT plutosvgTargets
     NAMESPACE plutosvg::
 )
 
-option(PLUTOSVG_BUILD_EXAMPLES "Build examples" ON)
-if(PLUTOSVG_BUILD_EXAMPLES)
-    add_subdirectory(examples)
-endif()
+# option(PLUTOSVG_BUILD_EXAMPLES "Build examples" ON)
+# if(PLUTOSVG_BUILD_EXAMPLES)
+#     add_subdirectory(examples)
+# endif()
