@@ -6,6 +6,18 @@ set(PLUTOSVG_VERSION_MICRO 6)
 
 project(plutosvg LANGUAGES C VERSION ${PLUTOSVG_VERSION_MAJOR}.${PLUTOSVG_VERSION_MINOR}.${PLUTOSVG_VERSION_MICRO})
 
+set(plutosvg_is_top_level OFF)
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    set(plutosvg_is_top_level ON)
+endif()
+
+if(NOT plutosvg_is_top_level)
+    set(PLUTOVG_ENABLE_INSTALL OFF CACHE BOOL "" FORCE)
+    set(PLUTOVG_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+endif()
+
+include(GNUInstallDirs)
+
 add_subdirectory(plutovg)
 
 set(plutosvg_sources
@@ -49,49 +61,52 @@ endif()
 target_compile_definitions(plutosvg PUBLIC PLUTOSVG_HAS_FREETYPE)
 target_link_libraries(plutosvg PUBLIC Freetype::Freetype)
 
+option(PLUTOSVG_ENABLE_INSTALL "Generate PlutoSVG install and package metadata" ${plutosvg_is_top_level})
+if(PLUTOSVG_ENABLE_INSTALL)
+    include(CMakePackageConfigHelpers)
 
-include(CMakePackageConfigHelpers)
-configure_package_config_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/plutosvgConfig.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/plutosvgConfig.cmake"
-    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/plutosvg
-)
+    configure_package_config_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/plutosvgConfig.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/plutosvgConfig.cmake"
+        INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/plutosvg
+    )
 
-write_basic_package_version_file(plutosvgConfigVersion.cmake
-    VERSION ${PROJECT_VERSION}
-    COMPATIBILITY SameMajorVersion
-)
+    write_basic_package_version_file(
+        "${CMAKE_CURRENT_BINARY_DIR}/plutosvgConfigVersion.cmake"
+        VERSION ${PROJECT_VERSION}
+        COMPATIBILITY SameMajorVersion
+    )
 
-include(GNUInstallDirs)
-install(FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/plutosvg.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/plutosvg-ft.h
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/plutosvg
-)
+    install(FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/plutosvg.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/plutosvg-ft.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/plutosvg
+    )
 
-install(TARGETS plutosvg
-    EXPORT plutosvgTargets
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
+    install(TARGETS plutosvg
+        EXPORT plutosvgTargets
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    )
 
-install(EXPORT plutosvgTargets
-    FILE plutosvgTargets.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/plutosvg
-    NAMESPACE plutosvg::
-)
+    install(EXPORT plutosvgTargets
+        FILE plutosvgTargets.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/plutosvg
+        NAMESPACE plutosvg::
+    )
 
-install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/plutosvgConfig.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/plutosvgConfigVersion.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/plutosvg
-)
+    install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/plutosvgConfig.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/plutosvgConfigVersion.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/plutosvg
+    )
 
-export(EXPORT plutosvgTargets
-    FILE ${CMAKE_CURRENT_BINARY_DIR}/plutosvgTargets.cmake
-    NAMESPACE plutosvg::
-)
+    export(EXPORT plutosvgTargets
+        FILE ${CMAKE_CURRENT_BINARY_DIR}/plutosvgTargets.cmake
+        NAMESPACE plutosvg::
+    )
+endif()
 
 # option(PLUTOSVG_BUILD_EXAMPLES "Build examples" ON)
 # if(PLUTOSVG_BUILD_EXAMPLES)
