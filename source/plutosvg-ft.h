@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Samuel Ugochukwu <sammycageagle@gmail.com>
+ * Copyright (c) 2020-2026 Samuel Ugochukwu <sammycageagle@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -65,6 +65,7 @@
 #include <math.h>
 
 #include <ft2build.h>
+#include FT_FREETYPE_H
 #include FT_OTSVG_H
 #include FT_COLOR_H
 
@@ -148,7 +149,7 @@ static FT_Error plutosvg_ft_render(FT_GlyphSlot ft_slot, FT_Pointer* ft_state)
     char buffer[64];
     char* id = NULL;
     if(start_glyph_id < end_glyph_id) {
-        sprintf(buffer, "glyph%u", ft_slot->glyph_index);
+        snprintf(buffer, sizeof(buffer), "glyph%u", ft_slot->glyph_index);
         id = buffer;
     }
 
@@ -230,7 +231,7 @@ static FT_Error plutosvg_ft_preset_slot(FT_GlyphSlot ft_slot, FT_Bool ft_cache, 
     char buffer[64];
     char* id = NULL;
     if(start_glyph_id < end_glyph_id) {
-        sprintf(buffer, "glyph%u", ft_slot->glyph_index);
+        snprintf(buffer, sizeof(buffer), "glyph%u", ft_slot->glyph_index);
         id = buffer;
     }
 
